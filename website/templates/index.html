@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <main class="card">
+        <h1>Age Calculator</h1>
+
+        <form method="POST">
+            <div class="field">
+                <label for="birth_date">Birth date</label>
+                <input type="date" id="birth_date" name="birth_date" required
+                    value="{{ request.form.get('birth_date', '') }}">
+            </div>
+
+            <div class="field">
+                <label for="present_date">Present date</label>
+                <input type="date" id="present_date" name="present_date" required
+                    value="{{ request.form.get('present_date', '') }}">
+            </div>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if result %}
+        <div class="result">
+            <span class="result-number">{{ result.years }}</span>
+            <span class="result-label">years</span>
+            <span class="result-number">{{ result.months }}</span>
+            <span class="result-label">months</span>
+            <span class="result-number">{{ result.days }}</span>
+            <span class="result-label">days</span>
+        </div>
+        {% endif %}
+    </main>
+
+</body>
+
+</html>
