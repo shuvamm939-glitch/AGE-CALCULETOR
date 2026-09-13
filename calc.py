@@ -7,3 +7,33 @@ memory = 0 #Real calculator's M button
 #____________XD CALCULATOR____________________
 
 def calculate(expression):
+  """Safely evaluate a mathematical expression typed by the user."""
+  allowed_names = {
+    'sqrt': math.sqrt,
+    'pow': math.pow,
+    'pi': math.pi,
+    'e': math.e
+    'sin': lambda x: math.sin(math.radians(x)), # type: ignore
+    'cos': lambda x: math.cos(math.radians(x)),
+    'tan': lambda x: math.tan(math.radians(x)),
+    'log':math.log10,   #log base10
+    'In':math.log,       #natural log
+    'abs': abs,
+    'fact':math.factorial,
+    'round': round
+  }
+
+expression = expression.replace('^', '**')  # Replace ^ with ** for exponentiation
+
+try:
+    result = eval(expression, {"_builtins_":{}}, allowed_names) # type: ignore
+    return result
+except ZeroDivisionError:
+    return "Error:Invalid expression"
+
+#----------------PERCENTAGE--------------------
+
+def percentage_menu():
+    print("\n1.X% of Y  2.X is X% of what% of Y  3.Increase by Y% 4.Decrease X by Y%")
+  ch = input("Enter your choice (1-4): ")
+  x = float(input("Enter X: "))  
