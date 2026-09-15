@@ -4,6 +4,7 @@ HISTORY_FILE = "calculator_history.txt"
 history = []
 memory = 0 #Real calculator's M button
 
+
 #____________XD CALCULATOR____________________
 
 def calculate(expression):
@@ -50,3 +51,27 @@ def percentage_menu():
         print(f"Result = {x + (x * y / 100)}")
     elif ch == '4':
         print(f"Result = {x - (x * y / 100)}")
+    else:
+        print("Invalid choice")
+
+
+#-----------------MULTI NUMBER STATS-----------------
+
+def stats_menu():
+    """Display basic statistics for a list of numbers."""
+    try:
+        numbers = [
+            float(value)
+            for value in input("Enter numbers separated by spaces: ").split()
+        ]
+        if not numbers:
+            print("Please enter at least one number")
+            return
+
+        print(f"Count = {len(numbers)}")
+        print(f"Sum = {sum(numbers)}")
+        print(f"Mean = {sum(numbers) / len(numbers)}")
+        print(f"Minimum = {min(numbers)}")
+        print(f"Maximum = {max(numbers)}")
+    except ValueError:
+        print("Invalid number")
