@@ -11,3 +11,5 @@ A collaborative project featuring a collection of Python-powered calculation too
 ### Phase 2: Standard Calculator
 - [ ] create python script for standard calc - [@Eren](https://github.com/shuvamm939-glitch)
 - [ ] design calc ui and integrate to existing flask web. - [@thunderzz](https://github.com/thunderzz12)
+
+  Site Link - https://pycalculator.vercel.app/
