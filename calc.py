@@ -58,20 +58,11 @@ def percentage_menu():
 #-----------------MULTI NUMBER STATS-----------------
 
 def stats_menu():
-    """Display basic statistics for a list of numbers."""
-    try:
-        numbers = [
-            float(value)
-            for value in input("Enter numbers separated by spaces: ").split()
-        ]
-        if not numbers:
-            print("Please enter at least one number")
-            return
+    n = int(input("How many numbers? "))
+    nums = [float(input(f"Enter number {i + 1}:")) for i in range(n)]
+    print(f"sum = {sum(nums)}")
+    print(f"Average = {sum(nums)/n}")
+    print(f"Maximum = {max(nums)}")
+    print(f"Minimum = {min(nums)}")
 
-        print(f"Count = {len(numbers)}")
-        print(f"Sum = {sum(numbers)}")
-        print(f"Mean = {sum(numbers) / len(numbers)}")
-        print(f"Minimum = {min(numbers)}")
-        print(f"Maximum = {max(numbers)}")
-    except ValueError:
-        print("Invalid number")
+#-----------------UNIT CONVWWRTER-----------------
