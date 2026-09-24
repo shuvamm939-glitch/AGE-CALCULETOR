@@ -394,4 +394,58 @@ def clear_history():
     history = []
     print("History cleared(not yet saved to file).")
 
+
+#---------------------------MAIN MENU---------------------------------
+def print_menu():
+    print("\n============XD CALCULATOR============")
+    print(" Type any expression directly, e.g 5+3*2 - sqrt(16)")
+    print(" Supported:+-*/^, sqrt(), sin(), cos(), tan(), log(), ln(), abs(), fact(), round() pi e")
+    print(" Or type a command below:")
+    print(" percent -> percentage calculations")
+    print(" stats -> sum/average/max/min of many numbers")
+    print(" convert -> unit conversions")
+    print(" memory -> memory functions (M+, M-, MC, MR)")
+    print(" history -> show calculation history")
+    print(" save -> save history to file")
+    print(" load -> load history from file")
+    print(" clear -> clear history")
+    print(" exit -> Quit")
+    print("=====================================")
+
+
+def calculator():
+    load_history() #auto-load past history when program starts
+    print_menu()
+
+    while True:
+        user_input = input("\nEnter expression or command: ").strip().lower()
+
+        if user_input == "exit":
+            print("Exiting calculator. Goodbye!")
+            break
+        elif user_input == "percent":
+            percentage_menu()
+        elif user_input == "stats":
+            stats_menu()
+        elif user_input == "convert":
+            unit_converter()
+        elif user_input == "memory":
+            memory_menu()
+        elif user_input == "history":
+            show_history()
+        elif user_input == "save":
+            save_history()
+        elif user_input == "load":
+            load_history()
+        elif user_input == "clear":
+            clear_history()
+        else:
+            result = calculate(user_input)
+            print(f"Result: {result}")
+            history.append(f"{user_input} = {result}")
+
+
+if __name__ == "__main__":
+    calculator()
     
+
