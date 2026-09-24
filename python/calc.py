@@ -225,39 +225,39 @@ def calculate(expression):
     return result
 
 
-#---------------------------HISTORY----------------------------------
+#---------------------------PERCENTAGE----------------------------------
 
-def show_history():
-    if not history:
-        print("No history available.")
-    else:
-        print("\n---History---")
-        for i, item in enumerate(history, 1):
-            print(f"{i}. {item}")
-        print("_____________")
+def percentage_menu():
+    print("\n1. X% of Y")
+    print("2. X is what % of Y")
+    print("3. Increase X by Y%")
+    print("4. Decrease X by Y%")
+    print("5. Percentage change from X to Y")
+    choice = input("Enter your choice (1-5): ").strip()
 
-def save_history():
-    with open(HISTORY_FILE, "w") as file:
-        for item in history:
-            file.write(item+"\n")
-    print(f"History saved to '{HISTORY_FILE}'.")
+    if choice not in ("1", "2", "3", "4", "5"):
+        print("Invalid choice")
+        return
 
+    x = ask_float("Enter X: ")
+    y = ask_float("Enter Y: ")
 
-def load_history():
-    global history
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r") as file:
-            history = [line.strip() for line in file if line.strip()]
-        print(f"History Loaded from '{len(history)} past calculations.'")
-    else:
-        history = []
-        print("No existing history found.")
-
-
-def clear_history():
-    global history
-    history = []
-    print("History cleared(not yet saved to file).")
+    if choice == "1":
+        print(f"Result = {format_number(x * y / 100)}")
+    elif choice == "2":
+        if y == 0:
+            print("Y cannot be zero.")
+        else:
+            print(f"Result = {format_number(x / y * 100)}%")
+    elif choice == "3":
+        print(f"Result = {format_number(x + x * y / 100)}")
+    elif choice == "4":
+        print(f"Result = {format_number(x - x * y / 100)}")
+    elif choice == "5":
+        if x == 0:
+            print("X cannot be zero.")
+        else:
+            print(f"Change = {format_number((y - x) / x * 100)}%")
 
 
 #---------------------------MAIN MENU---------------------------------
