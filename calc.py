@@ -334,4 +334,28 @@ elif ch == '37':
 
 else:
     print("Invalid choice! Please enter a number from 1 to 37.")
-    
+
+
+#-----------------------------MEMORY FUNCTION--------------------------
+
+def memory_menu():
+    global memory
+    print(f"\nCurrent memory value: {memory}")
+    print("1. M+ (Add to memory)")
+    print("2. M- (Subtract from memory)")
+    print("3. MC (Memory clear)")
+    print("4. MR (Memory recall)")
+    ch = input("Choose (1-4): ")
+    if ch == '1':
+        value = float(input("Enter value to add: "))
+        memory += value
+    elif ch == '2':
+        value = float(input("Enter value to subtract: "))
+        memory -= value
+    elif ch == '3':
+        memory = 0
+    elif ch == '4':
+        print(f"Memory value: {memory}")
+    else:
+        print("Invalid choice! Please enter a number from 1 to 4.")
+        
