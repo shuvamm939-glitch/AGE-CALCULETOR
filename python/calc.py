@@ -356,7 +356,7 @@ def unit_converter():
         print("Invalid direction.")
 
 
-#----------------------------NUMBER BASE CONVERTER----------------------------
+#------------------------NUMBER BASE CONVERTER----------------------------
 
 def base_menu():
     print("\n1. Decimal → Binary / Octal / Hex")
@@ -379,4 +379,36 @@ def base_menu():
             print("Invalid choice")
     except ValueError:
         print("That is not a valid number for this base.")
+
+#-----------------MEMORY  (M+ M- MC MR)----------------------
+
+def memory_add(value):
+    global memory
+    memory += value
+    print(f"Memory = {format_number(memory)}")
+
+
+def memory_menu():
+    global memory
+    print(f"\nCurrent memory value: {format_number(memory)}")
+    print("1. M+ (Add to memory)")
+    print("2. M- (Subtract from memory)")
+    print("3. MC (Memory clear)")
+    print("4. MR (Memory recall)")
+    choice = input("Choose (1-4): ").strip()
+
+    if choice == "1":
+        memory_add(ask_float("Enter value to add: "))
+    elif choice == "2":
+        memory_add(-ask_float("Enter value to subtract: "))
+    elif choice == "3":
+        memory = 0
+        print("Memory cleared.")
+    elif choice == "4":
+        print(f"Memory value: {format_number(memory)}")
+    else:
+        print("Invalid choice! Please enter a number from 1 to 4.")
+
+
+#------------------HISTORY----------------------
 
