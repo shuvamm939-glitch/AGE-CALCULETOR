@@ -358,4 +358,40 @@ def memory_menu():
         print(f"Memory value: {memory}")
     else:
         print("Invalid choice! Please enter a number from 1 to 4.")
-        
+
+
+#---------------------------HISTORY----------------------------------
+
+def show_history():
+    if not history:
+        print("No history available.")
+    else:
+        print("\n---History---")
+        for i, item in enumerate(history, 1):
+            print(f"{i}. {item}")
+        print("_____________")
+
+def save_history():
+    with open(HISTORY_FILE, "w") as file:
+        for item in history:
+            file.write(item+"\n")
+    print(f"History saved to '{HISTORY_FILE}'.")
+
+
+def load_history():
+    global history
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r") as file:
+            history = [line.strip() for line in file if line.strip()]
+        print(f"History Loaded from '{len(history)} past calculations.'")
+    else:
+        history = []
+        print("No existing history found.")
+
+
+def clear_history():
+    global history
+    history = []
+    print("History cleared(not yet saved to file).")
+
+    
