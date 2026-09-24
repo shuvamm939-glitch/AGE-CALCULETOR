@@ -14,4 +14,5 @@ A collaborative project featuring a collection of Python-powered calculation too
 
   Site Link - https://pycalculator.vercel.app/
 
-The Site Is On Progress It Will Take Few More Day..
+The Site Is On Progress It Will Take Few More Days.....
+
