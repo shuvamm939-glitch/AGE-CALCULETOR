@@ -1,8 +1,33 @@
+"""
+XD CALCULATOR  
+A normal + scientific calculator that runs in the terminal.
+
+New in this version:
+  * Safe expression evaluator (no eval() -> no security hole)
+  * DEG / RAD mode for trigonometry
+  * 'ans' (last answer) and 'm' (memory value) can be used inside expressions
+  * Shortcuts: m+  m-  mc  mr   (like the M buttons on a real calculator)
+  * More functions: asin, acos, atan, sinh, cosh, tanh, exp, log2, cbrt,
+    floor, ceil, gcd, lcm, ncr, npr
+  * Implicit multiplication:  2pi  ->  2*pi     3(4+5)  ->  3*(4+5)
+  * Number base converter (binary / octal / hexadecimal)
+  * Unit converter now works in BOTH directions and uses a table
+    (37 if/elif blocks became one small function)
+  * Better error messages and no crashes on wrong input
+"""
+
+import ast
 import  math
 import os
+import re
+import statistics
+
+
 HISTORY_FILE = "calculator_history.txt"
-history = []
-memory = 0 #Real calculator's M button
+history = []          # list of strings like "5+3 = 8"
+memory = 0            #Real calculator's M button
+last_answer = 0       # the "ans" button
+angle_mode = "DEG"    # "DEG" or "RAD"
 
 
 #____________XD CALCULATOR____________________
@@ -447,5 +472,5 @@ def calculator():
 
 if __name__ == "__main__":
     calculator()
-    
+
 
