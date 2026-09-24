@@ -17,80 +17,61 @@ New in this version:
 """
 
 import ast
-import  math
+import math
+import operator
 import os
 import re
 import statistics
 
-
 HISTORY_FILE = "calculator_history.txt"
 history = []          # list of strings like "5+3 = 8"
-memory = 0            #Real calculator's M button
+memory = 0            # Real calculator's M button
 last_answer = 0       # the "ans" button
 angle_mode = "DEG"    # "DEG" or "RAD"
 
 
 #____________XD CALCULATOR____________________
 
-def calculate(expression):
-    """Safely evaluate a mathematical expression typed by the user."""
-    allowed_names = {
-        'sqrt': math.sqrt,
-        'pow': math.pow,
-        'pi': math.pi,
-        'e': math.e,
-        'sin': lambda x: math.sin(math.radians(x)),
-        'cos': lambda x: math.cos(math.radians(x)),
-        'tan': lambda x: math.tan(math.radians(x)),
-        'log': math.log10,
-        'ln': math.log,
-        'abs': abs,
-        'fact': math.factorial,
-        'round': round,
-    }
 
-    expression = expression.replace('^', '**')
-
-    try:
-        result = eval(expression, {"_builtins_": {}}, allowed_names)
-        return result
-    except ZeroDivisionError:
-        return "Error: Invalid expression"
-    except (SyntaxError, NameError, TypeError, ValueError):
-        return "Error: Invalid expression"
+class CalcError(Exception):
+    """Our own error type. It carries a message we can show to the user."""
 
 
-#----------------PERCENTAGE--------------------
-
-def percentage_menu():
-    print("\n1.X% of Y  2.X is X% of what% of Y  3.Increase by Y% 4.Decrease X by Y%")
-    ch = input("Enter your choice (1-4): ")
-    x = float(input("Enter X: "))
-    y = float(input("Enter Y: "))
-
-    if ch == '1':
-        print(f"Result = {x * y / 100}")
-    elif ch == '2':
-        print(f"Result = {(x / y) * 100}%")
-    elif ch == '3':
-        print(f"Result = {x + (x * y / 100)}")
-    elif ch == '4':
-        print(f"Result = {x - (x * y / 100)}")
-    else:
-        print("Invalid choice")
+def ask_float(prompt):
+    """Keep asking until the user types a valid number."""
+    while True:
+        try:
+            return float(input(prompt))
+        except ValueError:
+            print("  Please enter a valid number.")
 
 
-#-----------------MULTI NUMBER STATS-----------------
+def ask_int(prompt, minimum=None):
+    """Keep asking until the user types a whole number."""
+    while True:
+        try:
+            value = int(input(prompt))
+        except ValueError:
+            print("  Please enter a whole number.")
+            continue
+        if minimum is not None and value < minimum:
+            print(f"  The number must be at least {minimum}.")
+            continue
+        return value
 
-def stats_menu():
-    n = int(input("How many numbers? "))
-    nums = [float(input(f"Enter number {i + 1}:")) for i in range(n)]
-    print(f"sum = {sum(nums)}")
-    print(f"Average = {sum(nums)/n}")
-    print(f"Maximum = {max(nums)}")
-    print(f"Minimum = {min(nums)}")
 
-#-----------------UNIT CONVERTER-----------------
+def format_number(x):
+    """Show 8.0 as 8 and 0.30000000000000004 as 0.3."""
+    if isinstance(x, float):
+        if math.isnan(x) or math.isinf(x):
+            return str(x)
+        if x.is_integer() and abs(x) < 1e15:
+            return str(int(x))
+        return f"{x:.12g}"
+    return str(x)
+
+
+#-----------------SCIENTIFIC FUNCTIONS-----------------
 
 def unit_converter():
     global memory, ch

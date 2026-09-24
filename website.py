@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request
-from newage import calculate_age
+from flask import Flask, render_template, request  # type: ignore
+from python.newage import calculate_age
 
 app = Flask(
     __name__,
