@@ -1,0 +1,2057 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>XD Calc — Futuristic Minimal Multi-Purpose Calculator</title>
+<!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&amp;family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&amp;family=Cinzel:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+    /* ==========================================================================
+       XD CALC — HANDCRAFTED DESIGN TOKENS & SYSTEM
+       Artisanal finish, warm organic contrast, physical tactile affordances
+       ========================================================================== */
+    :root {
+      /* Color Palette */
+      --bg-main: #0c0f12;
+      --bg-card: #14181d;
+      --bg-card-hover: #191f26;
+      --bg-input: #0f1317;
+      --bg-key: #1c222a;
+      --bg-key-hover: #242c36;
+      --bg-key-func: #171d24;
+      
+      /* Artisanal Cyan-Sage with warm emerald undertone */
+      --accent-teal: #2dd4bf;
+      --accent-teal-hover: #5eead4;
+      --accent-teal-glow: rgba(45, 212, 191, 0.22);
+      --accent-teal-subtle: rgba(45, 212, 191, 0.09);
+      --accent-emerald: #10b981;
+      
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-accent: #2dd4bf;
+
+      --danger-color: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.08);
+      --danger-border: rgba(239, 68, 68, 0.22);
+
+      --border-card: rgba(255, 255, 255, 0.07);
+      --border-card-hover: rgba(45, 212, 191, 0.3);
+      --border-subtle: rgba(255, 255, 255, 0.04);
+      --border-highlight: rgba(255, 255, 255, 0.12);
+
+      /* Typography */
+      --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Radii & Shadows */
+      --radius-xs: 6px;
+      --radius-sm: 8px;
+      --radius-md: 13px;
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 16px 40px -8px rgba(0, 0, 0, 0.55), 0 2px 8px -1px rgba(0, 0, 0, 0.45);
+      --shadow-tactile: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --shadow-glow: 0 0 45px var(--accent-teal-glow);
+      --transition-spring: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-quick: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reset & Base Setup */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Tactile grid pattern with optical depth */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.024) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 40%, transparent 85%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 40%, transparent 85%);
+    }
+
+    /* Ambient soft breathing background glow with fluid float animation */
+    .ambient-glow {
+      position: absolute;
+      top: 22%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 720px;
+      height: 480px;
+      background: radial-gradient(circle at 45% 45%, rgba(45, 212, 191, 0.14) 0%, rgba(16, 185, 129, 0.06) 45%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: ambientBreathe 14s ease-in-out infinite alternate;
+    }
+
+    @keyframes ambientBreathe {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.85;
+      }
+      50% {
+        transform: translate(-48%, -52%) scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-52%, -48%) scale(0.96);
+        opacity: 0.8;
+      }
+    }
+
+    /* Micro-details: Handcrafted keyboard shortcut pill */
+    .kbd-shortcut {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.15rem 0.42rem;
+      color: var(--text-muted);
+      background: linear-gradient(180deg, #1b2129 0%, #13171d 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      line-height: 1;
+      vertical-align: middle;
+      user-select: none;
+    }
+
+    /* Accessibility focus styling */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--accent-teal);
+      outline-offset: 2px;
+    }
+
+    /* Header & Navigation */
+    .top-bar {
+      position: relative;
+      z-index: 20;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(12, 15, 18, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .top-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+      transition: var(--transition-quick);
+    }
+    .logo:hover {
+      opacity: 0.9;
+    }
+    .logo-badge {
+      width: 29px;
+      height: 29px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.18), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(45, 212, 191, 0.35);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 2px 6px rgba(0, 0, 0, 0.25);
+      color: var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      position: relative;
+      overflow: hidden;
+    }
+    .logo-badge::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.25rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-btn {
+      text-decoration: none;
+      padding: 0.42rem 1rem;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: var(--transition-spring);
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+    .nav-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-btn.active {
+      color: #0b1116;
+      background: var(--accent-teal);
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(45, 212, 191, 0.35);
+    }
+    .nav-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Template View Switcher for Demo / Flask Preview */
+    .view-switcher-pill {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      margin-left: 1rem;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+    .view-pill-btn {
+      padding: 0.22rem 0.65rem;
+      font-size: 0.74rem;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: var(--transition-quick);
+    }
+    .view-pill-btn:hover {
+      color: var(--text-secondary);
+    }
+    .view-pill-btn.active {
+      background: rgba(45, 212, 191, 0.18);
+      color: var(--accent-teal);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      font-weight: 600;
+    }
+    .view-pill-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Mobile Hamburger */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border-card);
+      color: var(--text-primary);
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem 1.5rem;
+    }
+
+    /* Page View Containers (Simulates Flask Routes / Multi-Page) */
+    .page-section {
+      display: none;
+    }
+    .page-section.active {
+      display: block;
+      animation: pageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       PAGE 1: HOME (/)
+       Refined editorial grotesque typography & tactile cards
+       ========================================================================== */
+    .hero-section {
+      text-align: center;
+      max-width: 760px;
+      margin: 2.2rem auto 3.8rem auto;
+      animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroEntrance {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(45, 212, 191, 0.08);
+      border: 1px solid rgba(45, 212, 191, 0.25);
+      padding: 0.28rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--accent-teal);
+      margin-bottom: 1.4rem;
+    }
+    .hero-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      box-shadow: 0 0 8px var(--accent-teal);
+      animation: dotPulse 2s infinite ease-in-out;
+    }
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.65; }
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.65rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.14;
+      margin-bottom: 1.1rem;
+      color: #ffffff;
+      background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .home-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.85rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* Staggered card entrances */
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 2.25rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 255px;
+      transition: var(--transition-spring);
+      cursor: pointer;
+      opacity: 0;
+      animation: cardEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .tool-card:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+    .tool-card:nth-child(2) {
+      animation-delay: 0.22s;
+    }
+
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(22px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Realistic inner highlight border */
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+    }
+    /* Subtle radial hover spotlight on card */
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 0%), rgba(45, 212, 191, 0.05), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .tool-card:hover::after {
+      opacity: 1;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-6px);
+      background: var(--bg-card-hover);
+      border-color: var(--border-card-hover);
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7), 0 0 35px rgba(45, 212, 191, 0.12);
+    }
+    .tool-card:active {
+      transform: translateY(-2px) scale(0.985);
+      transition: all 0.1s ease;
+    }
+
+    .tool-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+    .tool-icon-wrap {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.12), rgba(16, 185, 129, 0.04));
+      border: 1px solid rgba(45, 212, 191, 0.25);
+      color: var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-tactile);
+      transition: var(--transition-spring);
+    }
+    .tool-card:hover .tool-icon-wrap {
+      border-color: rgba(45, 212, 191, 0.45);
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.2), rgba(16, 185, 129, 0.08));
+      transform: scale(1.04);
+    }
+
+    /* Handcrafted Bespoke Tactile Squircle Arrow Button */
+    .tactile-arrow-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #1f262f 0%, #171c23 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: var(--transition-spring);
+      position: relative;
+    }
+    .tactile-arrow-btn svg {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tool-card:hover .tactile-arrow-btn {
+      background: linear-gradient(180deg, #252e39 0%, #1b222a 100%);
+      border-color: rgba(45, 212, 191, 0.4);
+      color: var(--accent-teal);
+      box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(45, 212, 191, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    .tool-card:hover .tactile-arrow-btn svg {
+      transform: translateX(4px);
+    }
+    .tactile-arrow-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .tool-card-title {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.55rem;
+      color: #fff;
+    }
+    .tool-card-desc {
+      color: var(--text-secondary);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    /* Handcrafted "Explore tool" link with expandable underline effect */
+    .explore-link {
+      margin-top: 1.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent-teal);
+      position: relative;
+      text-decoration: none;
+      width: fit-content;
+    }
+    .explore-link-label {
+      position: relative;
+    }
+    .explore-link-label::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 1.5px;
+      background: var(--accent-teal);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 1px;
+    }
+    .explore-arrow-glyph {
+      display: inline-block;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tool-card:hover .explore-link-label::after {
+      width: 100%;
+    }
+    .tool-card:hover .explore-arrow-glyph {
+      transform: translate(3px, -3px);
+    }
+
+    /* ==========================================================================
+       PAGE 2: AGE CALCULATOR (/age)
+       ========================================================================== */
+    .age-page-container {
+      max-width: 580px;
+      margin: 1rem auto 2rem auto;
+    }
+    .card-main {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 2.35rem;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+    .card-main::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+    }
+    .card-header-title {
+      font-family: var(--font-display);
+      font-size: 2.15rem;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin-bottom: 0.45rem;
+      text-align: center;
+    }
+    .card-header-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.01em;
+    }
+    .date-input-wrap {
+      position: relative;
+    }
+    .text-input, .date-input {
+      width: 100%;
+      padding: 0.85rem 1.05rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+      transition: var(--transition-quick);
+    }
+    .date-input::-webkit-calendar-picker-indicator {
+      filter: invert(0.85) sepia(30%) saturate(400%) hue-rotate(125deg);
+      cursor: pointer;
+    }
+    .text-input:focus, .date-input:focus {
+      border-color: var(--accent-teal);
+      background: #11161b;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 0 0 3px var(--accent-teal-subtle);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(180deg, #38e1cc 0%, #22c5b0 100%);
+      color: #081116;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.98rem;
+      padding: 0.92rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: var(--transition-spring);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      box-shadow: 
+        0 4px 16px rgba(45, 212, 191, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #5eead4 0%, #2dd4bf 100%);
+      box-shadow: 
+        0 6px 22px rgba(45, 212, 191, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 2px 8px rgba(45, 212, 191, 0.25);
+    }
+
+    /* Error state message */
+    .alert-error {
+      margin-top: 1.25rem;
+      padding: 0.8rem 1rem;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: #fca5a5;
+      font-size: 0.86rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: shake 0.3s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    /* Result metric cards */
+    .result-section {
+      margin-top: 2rem;
+      padding-top: 1.85rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .result-label-heading {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 1.1rem;
+      font-weight: 600;
+    }
+    .age-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      text-align: center;
+    }
+    .stat-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 1.3rem 0.6rem;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+      transition: var(--transition-spring);
+    }
+    .stat-card:hover {
+      border-color: rgba(45, 212, 191, 0.35);
+      background: #12171c;
+      transform: translateY(-2px);
+    }
+    .stat-number {
+      font-family: var(--font-mono);
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.03em;
+    }
+    .stat-sublabel {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       PAGE 3: NORMAL & SCIENTIFIC CALCULATOR (/calculator)
+       ========================================================================== */
+    .calculator-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.85rem;
+      align-items: start;
+    }
+
+    /* Calculator Main Card */
+    .calc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 1.85rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .calc-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+    }
+
+    /* Top Chips Bar */
+    .calc-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    .status-chips-left {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .calc-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      padding: 0.24rem 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition-quick);
+      font-family: var(--font-mono);
+    }
+    .calc-chip:hover {
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .calc-chip.active {
+      color: var(--accent-teal);
+      border-color: rgba(45, 212, 191, 0.4);
+      background: var(--accent-teal-subtle);
+    }
+    .calc-chip:active {
+      transform: scale(0.95);
+    }
+
+    .memory-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.72rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(45, 212, 191, 0.08);
+      color: var(--accent-teal);
+      border: 1px solid rgba(45, 212, 191, 0.25);
+    }
+
+    /* Display Area */
+    .calc-display-wrap {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.35rem;
+      margin-bottom: 1.25rem;
+      text-align: right;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+    .display-expression {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      min-height: 1.35rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .display-result-line {
+      font-family: var(--font-mono);
+      font-size: 2.35rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      overflow-x: auto;
+      white-space: nowrap;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    .display-error-line {
+      color: #f87171;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    /* Full expression keyboard input */
+    .calc-input-bar {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .calc-expr-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.9rem;
+      padding-right: 3rem;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      transition: var(--transition-quick);
+    }
+    .calc-expr-input:focus {
+      border-color: var(--accent-teal);
+      background: var(--bg-input);
+      box-shadow: 0 0 0 2px var(--accent-teal-subtle);
+    }
+    .calc-input-kbd-hint {
+      position: absolute;
+      right: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Keypad Layout */
+    .keypad-memory-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.55rem;
+      margin-bottom: 0.75rem;
+    }
+    .btn-mem {
+      background: linear-gradient(180deg, #1b2129 0%, #151a20 100%);
+      color: var(--text-muted);
+      border: 1px solid var(--border-card);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.55rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: var(--shadow-tactile);
+      transition: var(--transition-quick);
+    }
+    .btn-mem:hover {
+      color: var(--text-primary);
+      background: linear-gradient(180deg, #222933 0%, #1a2027 100%);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .btn-mem:active {
+      transform: scale(0.95);
+    }
+
+    /* Scientific collapsible keys section */
+    .scientific-panel {
+      display: none;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+      padding: 0.85rem;
+      background: rgba(0, 0, 0, 0.28);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .scientific-panel.open {
+      display: grid;
+      animation: pageIn 0.22s ease;
+    }
+    .btn-sci {
+      background: linear-gradient(180deg, #1d232c 0%, #151a21 100%);
+      color: #94a3b8;
+      border: 1px solid var(--border-card);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.62rem 0.2rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--shadow-tactile);
+      transition: var(--transition-quick);
+    }
+    .btn-sci:hover {
+      background: linear-gradient(180deg, #232b36 0%, #192028 100%);
+      color: var(--accent-teal);
+      border-color: rgba(45, 212, 191, 0.35);
+    }
+    .btn-sci:active {
+      transform: scale(0.95);
+    }
+
+    /* Main keypad grid */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+    }
+    .calc-key {
+      background: linear-gradient(180deg, #1e242d 0%, #161b22 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 500;
+      height: 54px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+      transition: var(--transition-quick);
+      user-select: none;
+    }
+    .calc-key:hover {
+      background: linear-gradient(180deg, #262e39 0%, #1c232c 100%);
+      border-color: rgba(255, 255, 255, 0.14);
+      transform: translateY(-1px);
+    }
+    .calc-key:active {
+      transform: translateY(1px) scale(0.96);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .calc-key.op {
+      background: linear-gradient(180deg, #182028 0%, #12171e 100%);
+      color: var(--accent-teal);
+      font-weight: 600;
+    }
+    .calc-key.action-danger {
+      color: #f87171;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .calc-key.action-del {
+      color: #fb923c;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .calc-key.key-equals {
+      background: linear-gradient(180deg, #38e1cc 0%, #22c5b0 100%);
+      color: #091217;
+      font-weight: 700;
+      font-size: 1.45rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 
+        0 4px 14px rgba(45, 212, 191, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .calc-key.key-equals:hover {
+      background: linear-gradient(180deg, #5eead4 0%, #2dd4bf 100%);
+      box-shadow: 
+        0 6px 20px rgba(45, 212, 191, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    .calc-key.key-equals:active {
+      transform: translateY(1px) scale(0.96);
+      box-shadow: 0 2px 6px rgba(45, 212, 191, 0.3);
+    }
+
+    /* Side History Panel */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 1.6rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 550px;
+      position: relative;
+    }
+    .history-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+    }
+    .history-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1rem;
+    }
+    .history-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .history-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .btn-hist-action {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding: 0.28rem 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: var(--transition-quick);
+    }
+    .btn-hist-action:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-teal);
+    }
+    .btn-hist-action:active {
+      transform: scale(0.94);
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-right: 0.25rem;
+    }
+    .history-item {
+      padding: 0.8rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      text-align: right;
+      cursor: pointer;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: var(--transition-spring);
+    }
+    .history-item:hover {
+      border-color: rgba(45, 212, 191, 0.35);
+      background: #141a22;
+      transform: translateX(-2px);
+    }
+    .history-item:active {
+      transform: scale(0.98);
+    }
+    .hist-expr {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .hist-res {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent-teal);
+    }
+
+    /* Sub-Tools Tabs Under Calculator */
+    .calc-extra-tools-container {
+      margin-top: 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 1.6rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .calc-extra-tools-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+    }
+    .tools-tabs-nav {
+      display: flex;
+      gap: 0.4rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.35rem;
+      overflow-x: auto;
+    }
+    .tool-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition-spring);
+      white-space: nowrap;
+      font-family: var(--font-sans);
+    }
+    .tool-tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .tool-tab-btn.active {
+      color: var(--accent-teal);
+      background: var(--accent-teal-subtle);
+      border-color: rgba(45, 212, 191, 0.25);
+      font-weight: 600;
+    }
+    .tool-tab-btn:active {
+      transform: scale(0.95);
+    }
+
+    .tool-tab-panel {
+      display: none;
+    }
+    .tool-tab-panel.active {
+      display: block;
+      animation: pageIn 0.25s ease;
+    }
+
+    /* Unit Converter UI */
+    .converter-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+    .unit-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.15rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .unit-select {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--accent-teal);
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .unit-select option {
+      background: #161b22;
+      color: #fff;
+    }
+    .unit-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      color: #fff;
+      outline: none;
+    }
+    .btn-swap-units {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #202732 0%, #161b23 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-tactile);
+      color: var(--accent-teal);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-spring);
+    }
+    .btn-swap-units:hover {
+      background: linear-gradient(180deg, #26303d 0%, #1b212b 100%);
+      border-color: rgba(45, 212, 191, 0.4);
+      transform: rotate(180deg);
+    }
+    .btn-swap-units:active {
+      transform: rotate(180deg) scale(0.92);
+    }
+
+    /* Base Converter Grid */
+    .base-converter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .base-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-card);
+      padding: 1.1rem;
+      border-radius: var(--radius-md);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .base-label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .base-val {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    footer a {
+      color: var(--accent-teal);
+      text-decoration: none;
+    }
+    .footer-dot {
+      color: var(--border-highlight);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE ADAPTATIONS
+       ========================================================================== */
+    @media (max-width: 860px) {
+      .calculator-layout-grid {
+        grid-template-columns: 1fr;
+      }
+      .home-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title {
+        font-size: 2.6rem;
+      }
+      .base-converter-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .converter-row {
+        grid-template-columns: 1fr;
+      }
+      .btn-swap-units {
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      .mobile-menu-active .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-card);
+        padding: 1rem;
+        z-index: 50;
+      }
+      .calc-key {
+        height: 48px;
+        font-size: 1rem;
+      }
+      .hero-title {
+        font-size: 2.15rem;
+      }
+    }
+  </style>
+<style id="calc-glass-overrides" class="">main { max-width: 96vw !important; width: 96vw !important; margin: 0 auto !important; padding: 2rem 2rem 5rem 2rem !important; }
+.top-bar-inner { max-width: 96vw !important; width: 96vw !important; padding: 1.5rem 2.5rem !important; }
+.logo { font-size: 2.1rem !important; gap: 1.1rem !important; letter-spacing: 0.1em !important; }
+.nav-links { padding: 0.4rem !important; gap: 0.8rem !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
+.nav-btn { font-size: 1.25rem !important; padding: 0.75rem 2.2rem !important; font-weight: 700 !important; }
+
+/* HERO SECTION & HOME WIDGETS 5% ULTRA-TRANSLUCENT GLASS */
+.hero-section { max-width: 1500px !important; margin: 2rem auto 4rem auto !important; }
+.hero-pill-tag { font-size: 1.2rem !important; padding: 0.65rem 1.7rem !important; letter-spacing: 0.12em !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; }
+.hero-pill-dot { width: 10px !important; height: 10px !important; }
+.hero-title { font-size: clamp(3.6rem, 6.5vw, 5.5rem) !important; margin-bottom: 1.8rem !important; letter-spacing: 0.05em !important; line-height: 1.1 !important; text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8) !important; }
+.home-cards-grid { max-width: 100% !important; grid-template-columns: repeat(2, 1fr) !important; gap: 3.5rem !important; }
+.tool-card { padding: 3.8rem 3.4rem !important; min-height: 380px !important; border-radius: 32px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 16px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important; }
+.tool-card:hover { transform: translateY(-6px) scale(1.008) !important; background: rgba(255, 255, 255, 0.08) !important; border-color: rgba(45, 212, 191, 0.45) !important; box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 30px rgba(45, 212, 191, 0.2) !important; }
+.tool-icon-wrap { width: 80px !important; height: 80px !important; font-size: 2.2rem !important; border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(8px) !important; }
+.tool-icon-wrap svg { width: 40px !important; height: 40px !important; stroke-width: 2.3 !important; }
+.tactile-arrow-btn { width: 68px !important; height: 68px !important; border-radius: 9999px !important; background: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(8px) !important; }
+.tactile-arrow-btn img { width: 36px !important; height: 36px !important; }
+.tool-card-title { font-size: 3rem !important; font-weight: 700 !important; margin-bottom: 1rem !important; letter-spacing: 0.03em !important; text-shadow: 0 2px 10px rgba(0,0,0,0.7) !important; }
+.tool-card-desc { font-size: 1.45rem !important; line-height: 1.6 !important; color: #e2e8f0 !important; text-shadow: 0 1px 6px rgba(0,0,0,0.7) !important; }
+.explore-link { font-size: 1.35rem !important; margin-top: 2.5rem !important; padding: 0.75rem 1.6rem !important; background: rgba(45, 212, 191, 0.1) !important; border: 1px solid rgba(45, 212, 191, 0.3) !important; border-radius: 9999px !important; backdrop-filter: blur(8px) !important; }
+.explore-link-label { font-size: 1.25rem !important; font-weight: 700 !important; letter-spacing: 0.08em !important; }
+
+/* AGE CALCULATOR WIDGET 5% ULTRA-TRANSLUCENT GLASS */
+.age-page-container { max-width: 96vw !important; width: 96vw !important; margin: 1.5rem auto 3rem auto !important; }
+.card-main { padding: 3.5rem 4rem !important; border-radius: 32px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important; }
+.card-header-title { font-size: 3.8rem !important; letter-spacing: 0.04em !important; margin-bottom: 0.8rem !important; text-shadow: 0 3px 15px rgba(0,0,0,0.8) !important; }
+.card-header-subtitle { font-size: 1.45rem !important; max-width: 900px !important; margin: 0 auto 3rem auto !important; line-height: 1.6 !important; color: #cbd5e1 !important; text-shadow: 0 1px 8px rgba(0,0,0,0.7) !important; }
+.age-dashboard-layout { display: grid !important; grid-template-columns: 1fr 1.6fr !important; gap: 3.5rem !important; align-items: start !important; }
+.age-dashboard-layout form { padding: 2.5rem !important; border-radius: 24px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; }
+.form-group { margin-bottom: 2rem !important; }
+.form-label { font-size: 1.35rem !important; margin-bottom: 0.8rem !important; font-weight: 600 !important; color: #f1f5f9 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.6) !important; }
+.kbd-shortcut { font-size: 1rem !important; padding: 0.4rem 0.85rem !important; border-radius: 8px !important; background: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; }
+.text-input, .date-input { font-size: 1.45rem !important; padding: 1.3rem 1.6rem !important; border-radius: 16px !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(10px) !important; color: #ffffff !important; }
+.btn-primary { font-size: 1.55rem !important; padding: 1.4rem 2.8rem !important; border-radius: 18px !important; font-weight: 700 !important; letter-spacing: 0.09em !important; margin-top: 2.4rem !important; backdrop-filter: blur(8px) !important; box-shadow: 0 8px 30px rgba(45, 212, 191, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important; }
+.btn-primary svg { width: 26px !important; height: 26px !important; }
+.result-label-heading { font-size: 1.4rem !important; margin-bottom: 2rem !important; font-weight: 800 !important; letter-spacing: 0.15em !important; text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important; }
+.age-stats-grid { gap: 2rem !important; }
+.stat-card { padding: 2.6rem 1.8rem !important; border-radius: 24px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 12px 30px rgba(0,0,0,0.3) !important; }
+.stat-number { font-size: 5.5rem !important; font-weight: 800 !important; line-height: 1 !important; margin-bottom: 0.8rem !important; text-shadow: 0 4px 20px rgba(0,0,0,0.7) !important; }
+.stat-sublabel { font-size: 1.35rem !important; font-weight: 700 !important; letter-spacing: 0.12em !important; color: #cbd5e1 !important; }
+
+/* CALCULATOR WIDGET 5% ULTRA-TRANSLUCENT GLASS */
+.calculator-layout-grid { display: grid !important; grid-template-columns: minmax(0, 1.8fr) minmax(380px, 1fr) !important; gap: 2.5rem !important; width: 100% !important; }
+.calc-card { padding: 2.8rem 3rem !important; border-radius: 30px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(18px) saturate(130%) !important; -webkit-backdrop-filter: blur(18px) saturate(130%) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important; }
+.calc-status-bar { font-size: 1.15rem !important; margin-bottom: 1.5rem !important; }
+.calc-chip { font-size: 1.1rem !important; padding: 0.55rem 1.3rem !important; border-radius: 12px !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(8px) !important; }
+.calc-chip.active { background: rgba(45, 212, 191, 0.16) !important; border-color: rgba(45, 212, 191, 0.4) !important; color: #5eead4 !important; }
+.memory-indicator { font-size: 1.1rem !important; padding: 0.55rem 1.2rem !important; border-radius: 10px !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; }
+.calc-display-wrap { padding: 1.8rem 2.5rem !important; margin-bottom: 1.8rem !important; border-radius: 20px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3) !important; }
+.display-expression { font-size: 1.55rem !important; min-height: 2.4rem !important; color: #94a3b8 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important; }
+.display-result-line { font-size: 4.6rem !important; font-weight: 700 !important; line-height: 1.15 !important; text-shadow: 0 4px 20px rgba(0,0,0,0.9), 0 0 30px rgba(255,255,255,0.2) !important; }
+.calc-input-bar { margin-bottom: 1.8rem !important; }
+.calc-expr-input { font-size: 1.35rem !important; padding: 1.25rem 4.5rem 1.25rem 1.6rem !important; border-radius: 16px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #fff !important; }
+.calc-input-kbd-hint button { width: 44px !important; height: 44px !important; border-radius: 8px !important; background: rgba(255, 255, 255, 0.08) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(8px) !important; }
+.calc-input-kbd-hint img { width: 26px !important; height: 26px !important; }
+.keypad-memory-row { gap: 1.1rem !important; margin-bottom: 1.4rem !important; }
+.btn-mem { font-size: 1.25rem !important; padding: 1.05rem !important; border-radius: 14px !important; font-weight: 700 !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(10px) !important; color: #cbd5e1 !important; }
+.btn-mem:hover { background: rgba(255, 255, 255, 0.1) !important; color: #fff !important; }
+.scientific-panel { gap: 1rem !important; padding: 1.4rem !important; border-radius: 20px !important; margin-bottom: 1.4rem !important; background: rgba(255, 255, 255, 0.04) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+.btn-sci { font-size: 1.25rem !important; padding: 1.05rem 0.5rem !important; border-radius: 14px !important; font-weight: 600 !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(8px) !important; color: #cbd5e1 !important; }
+.btn-sci:hover { background: rgba(45, 212, 191, 0.15) !important; border-color: rgba(45, 212, 191, 0.35) !important; color: #5eead4 !important; }
+.keypad-grid { gap: 1.1rem !important; }
+.calc-key { height: 76px !important; font-size: 1.8rem !important; border-radius: 16px !important; font-weight: 600 !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important; }
+.calc-key:hover { background: rgba(255, 255, 255, 0.12) !important; border-color: rgba(255, 255, 255, 0.25) !important; transform: translateY(-2px) !important; }
+.calc-key.op { background: rgba(45, 212, 191, 0.08) !important; border-color: rgba(45, 212, 191, 0.22) !important; color: #5eead4 !important; }
+.calc-key.action-danger, .calc-key.action-del { font-size: 1.55rem !important; background: rgba(239, 68, 68, 0.08) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+.calc-key.key-equals { font-size: 2.6rem !important; background: linear-gradient(180deg, #38e1cc 0%, #22c5b0 100%) !important; color: #091217 !important; }
+
+.history-card { padding: 2.6rem !important; border-radius: 30px !important; min-height: 680px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(18px) saturate(130%) !important; -webkit-backdrop-filter: blur(18px) saturate(130%) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important; }
+.history-title { font-size: 2.2rem !important; text-shadow: 0 2px 10px rgba(0,0,0,0.8) !important; }
+.btn-hist-action { font-size: 1.15rem !important; padding: 0.6rem 1.3rem !important; border-radius: 10px !important; background: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important; backdrop-filter: blur(8px) !important; }
+.history-item { padding: 1.3rem !important; border-radius: 16px !important; margin-bottom: 0.8rem !important; background: rgba(255, 255, 255, 0.04) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; backdrop-filter: blur(10px) !important; }
+.history-item:hover { background: rgba(255, 255, 255, 0.09) !important; border-color: rgba(45, 212, 191, 0.3) !important; }
+.hist-expr { font-size: 1.25rem !important; }
+.hist-res { font-size: 1.85rem !important; text-shadow: 0 2px 10px rgba(45, 212, 191, 0.3) !important; }
+
+/* EXTRA TOOLS TABS 5% ULTRA-TRANSLUCENT GLASS */
+.calc-extra-tools-container { padding: 2.8rem 3rem !important; border-radius: 30px !important; margin-top: 2.5rem !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(18px) saturate(130%) !important; -webkit-backdrop-filter: blur(18px) saturate(130%) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important; }
+.tools-tabs-nav { gap: 1.1rem !important; margin-bottom: 2.2rem !important; }
+.tool-tab-btn { font-size: 1.3rem !important; padding: 0.85rem 1.9rem !important; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(8px) !important; }
+.tool-tab-btn.active { background: rgba(45, 212, 191, 0.15) !important; border-color: rgba(45, 212, 191, 0.35) !important; color: #5eead4 !important; }
+.converter-row { gap: 2.2rem !important; }
+.unit-box { padding: 2rem 2.4rem !important; border-radius: 20px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important; }
+.unit-select { font-size: 1.45rem !important; margin-bottom: 1rem !important; color: #5eead4 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important; }
+.unit-input { font-size: 2.6rem !important; text-shadow: 0 2px 10px rgba(0,0,0,0.8) !important; }
+.btn-swap-units { width: 72px !important; height: 72px !important; border-radius: 20px !important; background: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(8px) !important; color: #5eead4 !important; }
+.btn-swap-units:hover { background: rgba(255, 255, 255, 0.12) !important; border-color: rgba(45, 212, 191, 0.4) !important; }
+.base-converter-grid { gap: 1.8rem !important; }
+.base-card { padding: 2rem !important; border-radius: 20px !important; background: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2) !important; }
+.base-label { font-size: 1.15rem !important; margin-bottom: 0.8rem !important; color: #cbd5e1 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.7) !important; }
+.base-val { font-size: 1.75rem !important; text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important; }
+
+footer { font-size: 1.25rem !important; padding: 3rem 2rem !important; background: rgba(255, 255, 255, 0.03) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; border-top: 1px solid rgba(255, 255, 255, 0.1) !important; }
+footer span[style*="font-size"] { font-size: 1.15rem !important; }</style></head>
+<body style="background-color: transparent !important;"><div aria-hidden="true" style="position: fixed; inset: 0px; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; overflow: hidden;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3PqwuA3TGaWdKnGJKTOK4wTSCFKtePB4tsYhaPvXcznHI8nYqt94MvjVShgvXgzH5V6Q1kwKaiWzsnxLKqhvdhZiGe6bQNNN216ZKgES4gMY90ixREezcxhjeMW5zE0gjc6z6em4btrmQEivEu2z2qD3rlekNVzLIP2wn-Gxv3UXmXaWg46vROz1mNTm4AFXqmusQ9uLGL1TmVFQjUDYpmrE7zPdDeENmhXxKvVtmsEq3s6YMQpgdF8LhAfrDmvLWMg" alt="Space background" style="position: absolute; inset: 0px; width: 100%; height: 100%; object-fit: cover; object-position: center center;" class=""><div style="position: absolute; inset: 0px; background: radial-gradient(circle, rgba(12, 15, 18, 0.18) 0%, rgba(8, 10, 13, 0.45) 100%); backdrop-filter: blur(0.5px);" class=""></div></div>
+<!-- Ambient Breathing Glow Behind Central Cards -->
+<div aria-hidden="true" class="ambient-glow"></div>
+<!-- ==========================================================================
+       GLOBAL TOP BAR (NAVBAR)
+       Collapsible on mobile, links for Home, Age, and Calculator with active teal state
+       ========================================================================== -->
+<header class="top-bar" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255, 255, 255, 0.12);">
+<div class="top-bar-inner">
+<a class="logo" href="#home" onclick="switchView('home'); return false;" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 800; letter-spacing: 0.08em;">
+
+<span class="">XD Calc</span>
+</a>
+<nav aria-label="Main Navigation" class="nav-links" id="mainNav" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; letter-spacing: 0.06em;">
+<button class="nav-btn" id="nav-home" onclick="switchView('home')">Home</button>
+<button class="nav-btn" id="nav-age" onclick="switchView('age')">Age</button>
+<button class="nav-btn active" id="nav-calculator" onclick="switchView('calculator')">Calculator</button>
+</nav>
+<div style="display: flex; align-items: center;">
+<!-- Interactive Multi-page simulator switch -->
+
+<button aria-label="Toggle navigation menu" class="mobile-menu-btn" onclick="toggleMobileMenu()">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</button>
+</div>
+</div>
+</header>
+<main>
+<!-- ==========================================================================
+         PAGE 1: HOME (/) - Flask template: home.html
+         ========================================================================== -->
+<section aria-labelledby="home-heading" class="page-section" id="view-home">
+<div class="hero-section">
+<div class="hero-pill-tag" style="display: inline-flex; align-items: center; gap: 0.65rem; background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1.5px solid rgba(52, 211, 153, 0.6); box-shadow: rgba(16, 185, 129, 0.35) 0px 0px 22px, rgba(0, 0, 0, 0.6) 0px 4px 12px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset; border-radius: 9999px; padding: 0.45rem 1.15rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; backdrop-filter: blur(14px); margin-bottom: 1.6rem;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: rgb(52, 211, 153); box-shadow: rgb(52, 211, 153) 0px 0px 10px, rgb(167, 243, 208) 0px 0px 4px; animation: 1.8s ease-in-out 0s infinite normal none running dotPulse;" class=""></span><span style="color: rgb(236, 253, 245); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 2px, rgba(52, 211, 153, 0.4) 0px 0px 10px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;" class=""><span style="color: rgb(110, 231, 183);" class="">✦</span> <span style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.08em;" class="">𝐯𝟐.𝟒 𝐄𝐧𝐠𝐢𝐧𝐞 𝐀𝐜𝐭𝐢𝐯𝐞</span></span></div>
+<h1 class="hero-title" id="home-heading" style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.04em;">𝗨𝗡𝗜𝗩𝗘𝗥𝗦𝗔𝗟 𝗖𝗔𝗟𝗖𝗨𝗟𝗔𝗧𝗢𝗥.</h1>
+
+</div>
+<div class="home-cards-grid">
+<!-- Age Calculator Card -->
+<div class="tool-card" onclick="switchView('age')" style="--mouse-x: 1726.6155242919922px; --mouse-y: 450.42364501953125px;">
+<div>
+<div class="tool-card-top">
+<div aria-hidden="true" class="tool-icon-wrap">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+<line x1="16" x2="16" y1="2" y2="6"></line>
+<line x1="8" x2="8" y1="2" y2="6"></line>
+<line x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+</div>
+<!-- Bespoke Tactile Squircle Arrow Button -->
+<div aria-hidden="true" class="tactile-arrow-btn" style="border-radius: 9999px; width: 40px; height: 40px; padding: 3px; display: flex; align-items: center; justify-content: center;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTFjAko8VSS7geWTN_fqOU1BILtfjxG9J4NOZKBZlwN1ZzlNrRUiNfq9PMnBajfeCrnD1yb_6PHP65xym2MXnpmnPG58p4iPzBXoo_27iiZjSsDQAznFxxXc4mz4ivSGWJnP9cHbEeqYSIC_EICNJ2uW7nOhBf5FD_Bsibe72NqmXjEEbkwfzLojlzqmzFsFdFyz4j0NNy65H-w9FsfN-_tsjWW9gzb5piCKGdeVkN_3QqLZjzybS0ohjt5ixqooJb8g" alt="Arrow" style="width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(0.9) drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px); transform: rotate(90deg); transition: transform 0.25s;" class=""></div>
+</div>
+<h2 class="tool-card-title" style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.02em;">Age Calculator</h2>
+<p class="tool-card-desc">Find your exact age in years, months and days with precision leap-year computation.</p>
+</div>
+<div class="explore-link"><span class="explore-link-label" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;">Explore tool</span>
+</div>
+</div>
+<!-- Normal Calculator Card -->
+<div class="tool-card" onclick="switchView('calculator')" style="--mouse-x: 345.477294921875px; --mouse-y: 242.42364501953125px;">
+<div>
+<div class="tool-card-top">
+<div aria-hidden="true" class="tool-icon-wrap">
+<svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22">
+<rect height="20" rx="2" width="16" x="4" y="2"></rect>
+<line x1="8" x2="16" y1="6" y2="6"></line>
+<line x1="16" x2="16" y1="14" y2="18"></line>
+<path d="M16 10h.01"></path>
+<path d="M12 10h.01"></path>
+<path d="M8 10h.01"></path>
+<path d="M12 14h.01"></path>
+<path d="M8 14h.01"></path>
+<path d="M12 18h.01"></path>
+<path d="M8 18h.01"></path>
+</svg>
+</div>
+<!-- Bespoke Tactile Squircle Arrow Button -->
+<div aria-hidden="true" class="tactile-arrow-btn" style="border-radius: 9999px; width: 40px; height: 40px; padding: 3px; display: flex; align-items: center; justify-content: center;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvnt8ih25Blnxsb8JG89OzYQfS3XDIzowpSwuWoZeTOg0zR7LFPidtOGsk2lnq3b_-s7L0sCZZKEqhpaEFhxECfI-bXbRZ1jyvO-5Bh-ohFrOMPClX8XL9Sx5eqXXmLcWiDg9WDeILN-DUUJZw5n1TWtKm3JSgFg_rgw2rld6wgnXliqpHmmjw4gU8ZqzfMHsba1CJR95j_bsy-_ofT5RJ5DX6379PyrHMNR6sM9BrVb14aLyZBN8P3NQQODMJBNLQGA" alt="Arrow" style="width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(0.9) drop-shadow(rgba(255, 255, 255, 0.4) 0px 0px 1px); transform: rotate(90deg); transition: transform 0.25s;" class=""></div>
+</div>
+<h2 class="tool-card-title" style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.02em;">Normal Calculator</h2>
+<p class="tool-card-desc">Standard and scientific calculator with memory registers, continuous history, and conversion suites.</p>
+</div>
+<div class="explore-link">
+<span class="explore-link-label" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;">Explore tool</span>
+
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================================================
+         PAGE 2: AGE CALCULATOR (/age) - Flask template: age.html
+         ========================================================================== -->
+<section aria-labelledby="age-title" class="page-section" id="view-age">
+<div class="age-page-container">
+<article class="card-main"><h1 class="card-header-title" id="age-title" style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.03em;">Chronological Age Station</h1><p class="card-header-subtitle">Enter your birth date and present date to calculate exact chronological coordinates, orbital cycles, and planetary duration.</p><div class="age-dashboard-layout" style="display: grid; grid-template-columns: 1.1fr 1.5fr; gap: 3rem; align-items: start;"><form action="/age" id="ageForm" method="POST" onsubmit="handleAgeSubmit(event)" style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.12);"><div class="form-group"><label class="form-label" for="birth_date"><span class="">Birth date</span><span class="kbd-shortcut">YYYY-MM-DD</span></label><div class="date-input-wrap"><input class="date-input" id="birth_date" name="birth_date" required="" type="date" value="2000-04-12"></div></div><div class="form-group" style="margin-top: 1.5rem;"><label class="form-label" for="present_date"><span class="">Present date</span><span class="kbd-shortcut">Today</span></label><div class="date-input-wrap"><input class="date-input" id="present_date" name="present_date" required="" type="date" value="2026-09-25"></div></div><div class="alert-error" id="ageErrorMessage" role="alert" style="display: none;"><svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg><span class="">Birth date must be before present date.</span></div><button class="btn-primary" type="submit" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2rem;"><span class="">Calculate Age Breakdown</span><svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="18"><line x1="5" x2="19" y1="12" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button></form><div class="result-section" id="ageResultArea" style="margin-top: 0; padding-top: 0; border-top: none;"><div class="result-label-heading" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.14em; text-align: left;">Calculated Chronological Breakdown</div><div class="age-stats-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.5rem;"><div class="stat-card"><div class="stat-number" id="statYears">26</div><div class="stat-sublabel">Years Elapsed</div></div><div class="stat-card"><div class="stat-number" id="statMonths">5</div><div class="stat-sublabel">Months</div></div><div class="stat-card"><div class="stat-number" id="statDays">13</div><div class="stat-sublabel">Days</div></div></div><div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;"><div class="stat-card" style="padding: 1.5rem;"><div class="stat-number" style="font-size: 2.2rem; color: var(--accent-teal);">9,662</div><div class="stat-sublabel">Total Days Survived</div></div><div class="stat-card" style="padding: 1.5rem;"><div class="stat-number" style="font-size: 2.2rem; color: rgb(94, 234, 212);">231,888</div><div class="stat-sublabel">Approx. Hours Orbiting</div></div></div></div></div></article>
+</div>
+</section>
+<!-- ==========================================================================
+         PAGE 3: NORMAL CALCULATOR (/calculator) - Flask template: calculator.html
+         ========================================================================== -->
+<section aria-labelledby="calc-title" class="page-section active" id="view-calculator">
+<div class="calculator-layout-grid">
+<!-- Left / Main: The Calculator Card -->
+<div class="calc-card" style="background: rgba(10, 16, 22, 0.22); backdrop-filter: blur(8px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 50px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset;">
+<!-- Status Chips -->
+<div class="calc-status-bar">
+<div class="status-chips-left">
+<button class="calc-chip active" id="toggleDegRad" onclick="toggleAngleMode()" type="button">DEG</button>
+<div class="memory-indicator" id="memIndicator">M = 0</div>
+</div>
+<button class="calc-chip" id="toggleSci" onclick="toggleSciPanel()" type="button" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 800; letter-spacing: 0.1em;">𝐒𝐂𝐈𝐄𝐍𝐓𝐈𝐅𝐈𝐂 <span id="sciChevron" class="">▾</span></button>
+</div>
+<!-- Display Screen -->
+<div class="calc-display-wrap" style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 8px inset, rgba(0, 0, 0, 0.2) 0px 4px 16px;">
+<div class="display-expression" id="displayExpr"></div>
+<div class="display-result-line" id="displayResult">0</div>
+<div class="display-error-line" id="displayError" style="display: none;">Cannot divide by zero</div>
+</div>
+<!-- Full Expression Keyboard Input -->
+<div class="calc-input-bar">
+<input class="calc-expr-input" id="exprInput" onkeydown="handleKeyInput(event)" placeholder="𝗧𝗬𝗣𝗘 𝗔𝗡 𝗘𝗫𝗣𝗥𝗘𝗦𝗦𝗜𝗢𝗡 · 𝗘.𝗚. 𝟮π + 𝘀𝗶𝗻(𝟯𝟬) · 𝗣𝗥𝗘𝗦𝗦 𝗘𝗡𝗧𝗘𝗥" type="text" style="font-family: &quot;JetBrains Mono&quot;, &quot;Fira Code&quot;, ui-monospace, monospace; font-feature-settings: &quot;zero&quot;, &quot;liga&quot;; letter-spacing: 0.03em; font-weight: 500; background: rgba(0, 0, 0, 0.18); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 3px inset;">
+<div class="calc-input-kbd-hint"><button type="button" onclick="document.getElementById('displayExpr').innerText = document.getElementById('exprInput').value; computeResult();" title="Press Enter to calculate" class="kbd-shortcut" style="cursor: pointer; padding: 2px 6px; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(rgb(36, 44, 54) 0%, rgb(22, 27, 34) 100%); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px; height: 26px; width: 28px;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZp2vW0AP3dnCNKUupfUQYG45u-FDRssOoOky9YeQo4sEZMK69HmVXyX-6Pw_Q8npjdZqKVivXR5Dqzn7BvV8zCRUmbRSOFOmyccdKOshF3RubNJ0b4LBbcv581Yi0iVDgDEzfokzRdiArIaae4dtg7zBAv9e0dbBPGq-JGRap78pDQu7cLr4FXxWZAnRXDc1QADYxNwVXeEAKpndXyydkOwhTg9Ps0-1NiPof0zvSlmdcjRBBDLjEMs0mrz2ZX5yNzg" alt="Enter" style="width: 16px; height: 16px; object-fit: contain; filter: brightness(0) invert(0.9); display: block;" class=""></button></div>
+</div>
+<!-- Memory Keys Row -->
+<div class="keypad-memory-row">
+<button class="btn-mem" onclick="memOp('MC')" type="button">MC</button>
+<button class="btn-mem" onclick="memOp('MR')" type="button">MR</button>
+<button class="btn-mem" onclick="memOp('M+')" type="button">M+</button>
+<button class="btn-mem" onclick="memOp('M-')" type="button">M-</button>
+</div>
+<!-- Scientific Slide-Down Keys Panel -->
+<div class="scientific-panel" id="scientificPanel" style="background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px inset;">
+<button class="btn-sci" onclick="insertToken('sin(')" type="button">sin</button>
+<button class="btn-sci" onclick="insertToken('cos(')" type="button">cos</button>
+<button class="btn-sci" onclick="insertToken('tan(')" type="button">tan</button>
+<button class="btn-sci" onclick="insertToken('asin(')" type="button">asin</button>
+<button class="btn-sci" onclick="insertToken('acos(')" type="button">acos</button>
+<button class="btn-sci" onclick="insertToken('atan(')" type="button">atan</button>
+<button class="btn-sci" onclick="insertToken('log(')" type="button">log</button>
+<button class="btn-sci" onclick="insertToken('ln(')" type="button">ln</button>
+<button class="btn-sci" onclick="insertToken('sqrt(')" type="button">sqrt</button>
+<button class="btn-sci" onclick="insertToken('cbrt(')" type="button">cbrt</button>
+<button class="btn-sci" onclick="insertToken('!')" type="button">x!</button>
+<button class="btn-sci" onclick="insertToken('π')" type="button">π</button>
+<button class="btn-sci" onclick="insertToken('e')" type="button">e</button>
+<button class="btn-sci" onclick="insertToken('abs(')" type="button">abs</button>
+<button class="btn-sci" onclick="insertToken('exp(')" type="button">exp</button>
+</div>
+<!-- Main Keypad Grid -->
+<div class="keypad-grid">
+<button class="calc-key action-danger" onclick="clearAll()" type="button">AC</button>
+<button class="calc-key action-del" onclick="delChar()" type="button">DEL</button>
+<button class="calc-key op" onclick="insertToken('(')" type="button">(</button>
+<button class="calc-key op" onclick="insertToken(')')" type="button">)</button>
+<button class="calc-key op" onclick="insertToken('^')" type="button">^</button>
+<button class="calc-key op" onclick="insertToken('%')" type="button">%</button>
+<button class="calc-key op" onclick="insertToken('ans')" type="button">ans</button>
+<button class="calc-key op" onclick="insertToken('/')" type="button">÷</button>
+<button class="calc-key" onclick="insertToken('7')" type="button">7</button>
+<button class="calc-key" onclick="insertToken('8')" type="button">8</button>
+<button class="calc-key" onclick="insertToken('9')" type="button">9</button>
+<button class="calc-key op" onclick="insertToken('*')" type="button">×</button>
+<button class="calc-key" onclick="insertToken('4')" type="button">4</button>
+<button class="calc-key" onclick="insertToken('5')" type="button">5</button>
+<button class="calc-key" onclick="insertToken('6')" type="button">6</button>
+<button class="calc-key op" onclick="insertToken('-')" type="button">-</button>
+<button class="calc-key" onclick="insertToken('1')" type="button">1</button>
+<button class="calc-key" onclick="insertToken('2')" type="button">2</button>
+<button class="calc-key" onclick="insertToken('3')" type="button">3</button>
+<button class="calc-key op" onclick="insertToken('+')" type="button">+</button>
+<button class="calc-key" onclick="insertToken('0')" type="button">0</button>
+<button class="calc-key" onclick="insertToken('.')" type="button">.</button>
+<button class="calc-key op" onclick="insertToken('00')" type="button">00</button>
+<button class="calc-key key-equals" onclick="computeResult()" type="button">=</button>
+</div>
+</div>
+<!-- Right / Side: History Panel -->
+<aside aria-label="Calculation History" class="history-card" style="background: rgba(10, 16, 22, 0.22); backdrop-filter: blur(8px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 50px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset;">
+<div class="history-head">
+<h2 class="history-title" style="font-family: &quot;Cinzel Decorative&quot;, Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.05em;">History</h2>
+<div class="history-actions">
+<button class="btn-hist-action" onclick="saveHistory()" type="button">Save</button>
+<button class="btn-hist-action" onclick="clearHistory()" type="button">Clear</button>
+</div>
+</div>
+<div class="history-list" id="historyList"><div class="history-item"><div class="hist-expr">73 =</div><div class="hist-res">73</div></div><div class="history-item"><div class="hist-expr">log(82) =</div><div class="hist-res">1.913814</div></div>
+<div class="history-item" onclick="recallHistory('2π + sin(30) × 12', '12.28318')">
+<div class="hist-expr">2π + sin(30) × 12 =</div>
+<div class="hist-res">12.28318</div>
+</div>
+<div class="history-item" onclick="recallHistory('450 × 1.18', '531')">
+<div class="hist-expr">450 × 1.18 =</div>
+<div class="hist-res">531</div>
+</div>
+<div class="history-item" onclick="recallHistory('sqrt(1024) + 16^2', '288')">
+<div class="hist-expr">sqrt(1024) + 16^2 =</div>
+<div class="hist-res">288</div>
+</div>
+<div class="history-item" onclick="recallHistory('log(1000) * 5', '15')">
+<div class="hist-expr">log(1000) * 5 =</div>
+<div class="hist-res">15</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Extra Calculation Tools Tabs Below Main Calculator -->
+<div class="calc-extra-tools-container" style="background: rgba(10, 16, 22, 0.22); backdrop-filter: blur(8px) saturate(140%); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 50px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset;">
+<div class="tools-tabs-nav" role="tablist" style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-weight: 700; letter-spacing: 0.06em;"><button class="tool-tab-btn active" onclick="switchToolTab('converter', this)" style="font-size: 1.45rem !important; font-weight: 800 !important; padding: 1.15rem 2.4rem !important; border-radius: 9999px !important; letter-spacing: 0.05em !important;">Unit Converter (37 units)</button>
+<button class="tool-tab-btn" onclick="switchToolTab('percentage', this)" style="font-size: 1.45rem !important; font-weight: 800 !important; padding: 1.15rem 2.4rem !important; border-radius: 9999px !important; letter-spacing: 0.05em !important;">Percentage</button>
+<button class="tool-tab-btn" onclick="switchToolTab('stats', this)" style="font-size: 1.45rem !important; font-weight: 800 !important; padding: 1.15rem 2.4rem !important; border-radius: 9999px !important; letter-spacing: 0.05em !important;">Stats</button>
+<button class="tool-tab-btn" onclick="switchToolTab('base', this)" style="font-size: 1.45rem !important; font-weight: 800 !important; padding: 1.15rem 2.4rem !important; border-radius: 9999px !important; letter-spacing: 0.05em !important;">Base Converter</button></div>
+<!-- Tab 1: Unit Converter with Swap button -->
+<div class="tool-tab-panel active" id="tab-converter">
+<div class="converter-row">
+<div class="unit-box">
+<select class="unit-select" id="unitFromSelect" onchange="runConversion()" style="font-size: 2.15rem !important; font-weight: 700 !important; line-height: 1.5 !important; padding: 1.2rem 1.6rem !important; margin-bottom: 1.4rem !important; border-radius: 16px !important; background: rgba(45, 212, 191, 0.1) !important; border: 1.5px solid rgba(45, 212, 191, 0.45) !important; color: rgb(94, 234, 212) !important; text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 6px !important; letter-spacing: 0.04em !important; width: 100% !important; cursor: pointer !important; min-height: 64px !important;">
+<optgroup label="Length">
+<option value="m">Meters (m)</option>
+<option value="km">Kilometers (km)</option>
+<option value="ft">Feet (ft)</option>
+<option value="mi">Miles (mi)</option>
+</optgroup>
+<optgroup label="Mass">
+<option value="kg">Kilograms (kg)</option>
+<option value="lb">Pounds (lb)</option>
+</optgroup>
+<optgroup label="Data">
+<option value="mb">Megabytes (MB)</option>
+<option value="gb">Gigabytes (GB)</option>
+</optgroup>
+</select>
+<input class="unit-input" id="unitFromInput" oninput="runConversion()" type="number" value="100">
+</div>
+<button class="btn-swap-units" onclick="swapUnits()" title="Swap conversion units" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.17157 5.67157 5.5 6.5 5.5H15.0858L13.2929 3.70711C12.9024 3.31658 12.9024 2.68342 13.2929 2.29289C13.6834 1.90237 14.3166 1.90237 14.7071 2.29289L18.7071 6.29289C19.0976 6.68342 19.0976 7.31658 18.7071 7.70711L14.7071 11.7071C14.3166 12.0976 13.6834 12.0976 13.2929 11.7071C12.9024 11.3166 12.9024 10.6834 13.2929 10.2929L15.0858 8.5H6.5C5.67157 8.5 5 7.82843 5 7ZM19 17C19 17.8284 18.3284 18.5 17.5 18.5H8.91421L10.7071 20.2929C11.0976 20.6834 11.0976 21.3166 10.7071 21.7071C10.3166 22.0976 9.68342 22.0976 9.29289 21.7071L5.29289 17.7071C4.90237 17.3166 4.90237 16.6834 5.29289 16.2929L9.29289 12.2929C9.68342 11.9024 10.3166 11.9024 10.7071 12.2929C11.0976 12.6834 11.0976 13.3166 10.7071 13.7071L8.91421 15.5H17.5C18.3284 15.5 19 16.1716 19 17Z"></path></svg></button>
+<div class="unit-box">
+<select class="unit-select" id="unitToSelect" onchange="runConversion()" style="font-size: 2.15rem !important; font-weight: 700 !important; line-height: 1.5 !important; padding: 1.2rem 1.6rem !important; margin-bottom: 1.4rem !important; border-radius: 16px !important; background: rgba(45, 212, 191, 0.1) !important; border: 1.5px solid rgba(45, 212, 191, 0.45) !important; color: rgb(94, 234, 212) !important; text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 6px !important; letter-spacing: 0.04em !important; width: 100% !important; cursor: pointer !important; min-height: 64px !important;">
+<optgroup label="Length">
+<option value="ft">Feet (ft)</option>
+<option value="m">Meters (m)</option>
+<option value="km">Kilometers (km)</option>
+<option value="mi">Miles (mi)</option>
+</optgroup>
+<optgroup label="Mass">
+<option value="lb">Pounds (lb)</option>
+<option value="kg">Kilograms (kg)</option>
+</optgroup>
+<optgroup label="Data">
+<option value="gb">Gigabytes (GB)</option>
+<option value="mb">Megabytes (MB)</option>
+</optgroup>
+</select>
+<input class="unit-input" id="unitToInput" readonly="" type="number" value="328.084">
+</div>
+</div>
+</div>
+<!-- Tab 2: Percentage -->
+<div class="tool-tab-panel" id="tab-percentage">
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; color: var(--text-secondary); font-family: var(--font-mono);">
+<span class="">What is</span>
+<input class="text-input" style="width: 105px;" type="number" value="15">
+<span class="">% of</span>
+<input class="text-input" style="width: 145px;" type="number" value="240">
+<span class="">=</span>
+<span style="color: var(--accent-teal); font-size: 1.35rem; font-weight: 600;" class="">36.00</span>
+</div>
+</div>
+<!-- Tab 3: Stats -->
+<div class="tool-tab-panel" id="tab-stats">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+<div class="base-card">
+<div class="base-label">Mean (Avg)</div>
+<div class="base-val">42.8</div>
+</div>
+<div class="base-card">
+<div class="base-label">Median</div>
+<div class="base-val">41.0</div>
+</div>
+<div class="base-card">
+<div class="base-label">Std Dev (σ)</div>
+<div class="base-val">8.42</div>
+</div>
+<div class="base-card">
+<div class="base-label">Sum (Σ)</div>
+<div class="base-val">214.0</div>
+</div>
+</div>
+</div>
+<!-- Tab 4: Base Converter -->
+<div class="tool-tab-panel" id="tab-base">
+<div class="base-converter-grid">
+<div class="base-card">
+<div class="base-label">Decimal (10)</div>
+<div class="base-val" id="baseDec">73</div>
+</div>
+<div class="base-card">
+<div class="base-label">Hexadecimal (16)</div>
+<div class="base-val" id="baseHex">0x49</div>
+</div>
+<div class="base-card">
+<div class="base-label">Binary (2)</div>
+<div class="base-val" id="baseBin">1001 001</div>
+</div>
+<div class="base-card">
+<div class="base-label">Octal (8)</div>
+<div class="base-val" id="baseOct">111</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Global Footer -->
+<footer style="font-family: Cinzel, &quot;Playfair Display&quot;, serif; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.08em; color: rgb(241, 245, 249); text-shadow: rgba(0, 0, 0, 0.85) 0px 2px 10px; padding: 2.5rem 1.5rem; background: rgba(12, 15, 18, 0.45); backdrop-filter: blur(14px); border-top: 1px solid rgba(255, 255, 255, 0.16); display: flex; align-items: center; justify-content: center; gap: 0.85rem; flex-wrap: wrap; text-transform: uppercase;" class=""><span style="color: rgb(248, 250, 252);" class="">Crafted with Python &amp; Flask</span><span class="footer-dot" style="color: var(--accent-teal); font-size: 1.4rem;">•</span><span style="color: rgb(248, 250, 252);" class="">XD Calc Minimal Precision Suite</span><span class="footer-dot" style="color: var(--accent-teal); font-size: 1.4rem;">•</span><span style="font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: rgb(94, 234, 212); background: rgba(45, 212, 191, 0.12); border: 1px solid rgba(45, 212, 191, 0.35); padding: 0.2rem 0.65rem; border-radius: 6px;" class="">v2.4.0</span></footer>
+<!-- ==========================================================================
+       CLIENT SCRIPT FOR INTERACTION & ROUTE EMULATION
+       ========================================================================== -->
+<script>
+    // Mouse spotlight tracking on tool cards for bespoke organic feel
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // State variables
+    let currentExpr = "2π + sin(30) × 12";
+    let lastAns = "12.28318";
+    let memoryVal = 0;
+    let angleMode = "DEG"; // DEG or RAD
+
+    // Route / View Switcher (Emulates Flask pages or Jinja route switching)
+    function switchView(viewName) {
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-pill-btn').forEach(pill => pill.classList.remove('active'));
+
+      const target = document.getElementById('view-' + viewName);
+      if (target) target.classList.add('active');
+
+      const navBtn = document.getElementById('nav-' + viewName);
+      if (navBtn) navBtn.classList.add('active');
+
+      const pillBtn = document.getElementById(viewName === 'home' ? 'pill-home' : (viewName === 'age' ? 'pill-age' : 'pill-calc'));
+      if (pillBtn) pillBtn.classList.add('active');
+
+      // Scroll smoothly to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      document.querySelector('.top-bar').classList.toggle('mobile-menu-active');
+    }
+
+    // Age Calculator Logic (Client side demo + handles form submission)
+    function handleAgeSubmit(e) {
+      e.preventDefault();
+      const birthStr = document.getElementById('birth_date').value;
+      const presentStr = document.getElementById('present_date').value;
+      const errBox = document.getElementById('ageErrorMessage');
+
+      if (!birthStr || !presentStr) return;
+
+      const birth = new Date(birthStr);
+      const present = new Date(presentStr);
+
+      if (birth > present) {
+        errBox.style.display = 'flex';
+        return;
+      }
+      errBox.style.display = 'none';
+
+      let years = present.getFullYear() - birth.getFullYear();
+      let months = present.getMonth() - birth.getMonth();
+      let days = present.getDate() - birth.getDate();
+
+      if (days < 0) {
+        months--;
+        const prevMonthDays = new Date(present.getFullYear(), present.getMonth(), 0).getDate();
+        days += prevMonthDays;
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      animateCountUp('statYears', years);
+      animateCountUp('statMonths', months);
+      animateCountUp('statDays', days);
+    }
+
+    // Smooth count-up animation for numbers
+    function animateCountUp(elementId, targetVal) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      let current = 0;
+      const step = Math.max(1, Math.floor(targetVal / 18));
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= targetVal) {
+          el.innerText = targetVal;
+          clearInterval(timer);
+        } else {
+          el.innerText = current;
+        }
+      }, 20);
+    }
+
+    // Calculator operations
+    function insertToken(token) {
+      const exprEl = document.getElementById('displayExpr');
+      const inputEl = document.getElementById('exprInput');
+      if (exprEl.innerText === '0' || exprEl.innerText === '') {
+        exprEl.innerText = token;
+      } else {
+        exprEl.innerText += token;
+      }
+      inputEl.value = exprEl.innerText;
+      document.getElementById('displayError').style.display = 'none';
+    }
+
+    function clearAll() {
+      document.getElementById('displayExpr').innerText = '';
+      document.getElementById('displayResult').innerText = '0';
+      document.getElementById('exprInput').value = '';
+      document.getElementById('displayError').style.display = 'none';
+    }
+
+    function delChar() {
+      const exprEl = document.getElementById('displayExpr');
+      exprEl.innerText = exprEl.innerText.slice(0, -1);
+      document.getElementById('exprInput').value = exprEl.innerText;
+    }
+
+    function toggleAngleMode() {
+      angleMode = angleMode === 'DEG' ? 'RAD' : 'DEG';
+      document.getElementById('toggleDegRad').innerText = angleMode;
+    }
+
+    function toggleSciPanel() {
+      const panel = document.getElementById('scientificPanel');
+      const chevron = document.getElementById('sciChevron');
+      panel.classList.toggle('open');
+      chevron.innerText = panel.classList.contains('open') ? '▴' : '▾';
+    }
+
+    function memOp(type) {
+      const resEl = document.getElementById('displayResult');
+      const num = parseFloat(resEl.innerText) || 0;
+      const memInd = document.getElementById('memIndicator');
+
+      if (type === 'MC') memoryVal = 0;
+      if (type === 'MR') insertToken(memoryVal.toString());
+      if (type === 'M+') memoryVal += num;
+      if (type === 'M-') memoryVal -= num;
+
+      memInd.innerText = `M = ${memoryVal}`;
+    }
+
+    function computeResult() {
+      const exprEl = document.getElementById('displayExpr');
+      const resEl = document.getElementById('displayResult');
+      const errEl = document.getElementById('displayError');
+      const raw = exprEl.innerText || document.getElementById('exprInput').value;
+
+      if (!raw) return;
+
+      try {
+        let sanitized = raw
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/')
+          .replace(/π/g, 'Math.PI')
+          .replace(/e/g, 'Math.E')
+          .replace(/sin\(/g, angleMode === 'DEG' ? 'Math.sin((Math.PI/180)*' : 'Math.sin(')
+          .replace(/cos\(/g, angleMode === 'DEG' ? 'Math.cos((Math.PI/180)*' : 'Math.cos(')
+          .replace(/tan\(/g, angleMode === 'DEG' ? 'Math.tan((Math.PI/180)*' : 'Math.tan(')
+          .replace(/sqrt\(/g, 'Math.sqrt(')
+          .replace(/log\(/g, 'Math.log10(')
+          .replace(/ln\(/g, 'Math.log(')
+          .replace(/\^/g, '**');
+
+        const val = Function('"use strict";return (' + sanitized + ')')();
+
+        if (!isFinite(val)) {
+          errEl.innerText = "Cannot divide by zero";
+          errEl.style.display = 'block';
+          return;
+        }
+
+        const formatted = Number.isInteger(val) ? val : parseFloat(val.toFixed(6));
+        resEl.innerText = formatted;
+        lastAns = formatted;
+        addHistoryItem(raw, formatted);
+
+        updateBaseConverter(Math.floor(val));
+      } catch (err) {
+        errEl.innerText = "Syntax Error";
+        errEl.style.display = 'block';
+      }
+    }
+
+    function handleKeyInput(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('displayExpr').innerText = e.target.value;
+        computeResult();
+      }
+    }
+
+    function addHistoryItem(expr, res) {
+      const list = document.getElementById('historyList');
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.onclick = () => recallHistory(expr, res);
+      item.innerHTML = `<div class="hist-expr">${expr} =</div><div class="hist-res">${res}</div>`;
+      list.insertBefore(item, list.firstChild);
+    }
+
+    function recallHistory(expr, res) {
+      document.getElementById('displayExpr').innerText = expr;
+      document.getElementById('displayResult').innerText = res;
+      document.getElementById('exprInput').value = expr;
+    }
+
+    function clearHistory() {
+      document.getElementById('historyList').innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:2rem 0;">No past calculations</div>';
+    }
+
+    function saveHistory() {
+      alert("Calculation session history saved for Flask user profile.");
+    }
+
+    // Sub-tools Tabs
+    function switchToolTab(tabName, btn) {
+      document.querySelectorAll('.tool-tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tool-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Unit Converter
+    function runConversion() {
+      const from = document.getElementById('unitFromSelect').value;
+      const to = document.getElementById('unitToSelect').value;
+      const val = parseFloat(document.getElementById('unitFromInput').value) || 0;
+      let res = val;
+
+      if (from === 'm' && to === 'ft') res = val * 3.28084;
+      else if (from === 'ft' && to === 'm') res = val / 3.28084;
+      else if (from === 'km' && to === 'mi') res = val * 0.621371;
+      else if (from === 'mi' && to === 'km') res = val / 0.621371;
+      else if (from === 'kg' && to === 'lb') res = val * 2.20462;
+      else if (from === 'lb' && to === 'kg') res = val / 2.20462;
+      else if (from === 'gb' && to === 'mb') res = val * 1024;
+      else if (from === 'mb' && to === 'gb') res = val / 1024;
+
+      document.getElementById('unitToInput').value = res.toFixed(3);
+    }
+
+    function swapUnits() {
+      const selFrom = document.getElementById('unitFromSelect');
+      const selTo = document.getElementById('unitToSelect');
+      const temp = selFrom.value;
+      selFrom.value = selTo.value;
+      selTo.value = temp;
+      runConversion();
+    }
+
+    function updateBaseConverter(val) {
+      if (isNaN(val) || val < 0) return;
+      document.getElementById('baseDec').innerText = val.toString(10);
+      document.getElementById('baseHex').innerText = '0x' + val.toString(16).toUpperCase();
+      document.getElementById('baseBin').innerText = val.toString(2).replace(/(\d{4})(?=\d)/g, '$1 ');
+      document.getElementById('baseOct').innerText = val.toString(8);
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>
