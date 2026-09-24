@@ -260,57 +260,100 @@ def percentage_menu():
             print(f"Change = {format_number((y - x) / x * 100)}%")
 
 
-#---------------------------MAIN MENU---------------------------------
-def print_menu():
-    print("\n============XD CALCULATOR============")
-    print(" Type any expression directly, e.g 5+3*2 - sqrt(16)")
-    print(" Supported:+-*/^, sqrt(), sin(), cos(), tan(), log(), ln(), abs(), fact(), round() pi e")
-    print(" Or type a command below:")
-    print(" percent -> percentage calculations")
-    print(" stats -> sum/average/max/min of many numbers")
-    print(" convert -> unit conversions")
-    print(" memory -> memory functions (M+, M-, MC, MR)")
-    print(" history -> show calculation history")
-    print(" save -> save history to file")
-    print(" load -> load history from file")
-    print(" clear -> clear history")
-    print(" exit -> Quit")
-    print("=====================================")
+#---------------------------STATISTICS---------------------------------
+
+def stats_menu():
+    n = ask_int("How many numbers? ", minimum=1)
+    nums = [ask_float(f"Enter number {i + 1}: ") for i in range(n)]
+
+    print(f"Sum      = {format_number(sum(nums))}")
+    print(f"Average  = {format_number(sum(nums) / n)}")
+    print(f"Median   = {format_number(statistics.median(nums))}")
+    print(f"Maximum  = {format_number(max(nums))}")
+    print(f"Minimum  = {format_number(min(nums))}")
+    print(f"Range    = {format_number(max(nums) - min(nums))}")
+    print(f"Std dev (population) = {format_number(statistics.pstdev(nums))}")
+    if n > 1:
+        print(f"Std dev (sample)     = {format_number(statistics.stdev(nums))}")
 
 
-def calculator():
-    load_history() #auto-load past history when program starts
-    print_menu()
+#  UNIT CONVERTER
+#  Each row: (category, unit A, unit B, function A->B, function B->A)
+#  Because we store both directions, every "↔" really works both ways.
 
-    while True:
-        user_input = input("\nEnter expression or command: ").strip().lower()
-
-        if user_input == "exit":
-            print("Exiting calculator. Goodbye!")
-            break
-        elif user_input == "percent":
-            percentage_menu()
-        elif user_input == "stats":
-            stats_menu()
-        elif user_input == "convert":
-            unit_converter()
-        elif user_input == "memory":
-            memory_menu()
-        elif user_input == "history":
-            show_history()
-        elif user_input == "save":
-            save_history()
-        elif user_input == "load":
-            load_history()
-        elif user_input == "clear":
-            clear_history()
-        else:
-            result = calculate(user_input)
-            print(f"Result: {result}")
-            history.append(f"{user_input} = {result}")
+def factor(f):
+    """Make a pair of functions for simple 'multiply by a number' units."""
+    return (lambda x: x * f), (lambda x: x / f)
 
 
-if __name__ == "__main__":
-    calculator()
+CONVERSIONS = [
+    ("Length",      "Km", "Miles", *factor(0.621371)),
+    ("Weight",      "Kg", "lbs", *factor(2.20462)),
+    ("Temperature", "°C", "°F",
+        lambda c: c * 9 / 5 + 32, lambda f: (f - 32) * 5 / 9),
+    ("Length",      "Meters", "Feet", *factor(3.28084)),
+    ("Length",      "Centimeters", "Inches", *factor(0.393701)),
+    ("Length",      "Meters", "Yards", *factor(1.09361)),
+    ("Weight",      "Kg", "Grams", *factor(1000)),
+    ("Weight",      "Grams", "Ounces", *factor(0.035274)),
+    ("Temperature", "°C", "Kelvin",
+        lambda c: c + 273.15, lambda k: k - 273.15),
+    ("Temperature", "°F", "Kelvin",
+        lambda f: (f - 32) * 5 / 9 + 273.15,
+        lambda k: (k - 273.15) * 9 / 5 + 32),
+    ("Speed",       "Km/h", "mph", *factor(0.621371)),
+    ("Speed",       "m/s", "Km/h", *factor(3.6)),
+    ("Time",        "Seconds", "Minutes", *factor(1 / 60)),
+    ("Time",        "Minutes", "Hours", *factor(1 / 60)),
+    ("Time",        "Hours", "Days", *factor(1 / 24)),
+    ("Area",        "m²", "ft²", *factor(10.7639)),
+    ("Area",        "Acres", "Hectares", *factor(0.404686)),
+    ("Volume",      "Liters", "Gallons", *factor(0.264172)),
+    ("Volume",      "Liters", "Milliliters", *factor(1000)),
+    ("Pressure",    "Bar", "PSI", *factor(14.5038)),
+    ("Pressure",    "Pascal", "Bar", *factor(1e-5)),
+    ("Energy",      "Joules", "Calories", *factor(1 / 4.184)),
+    ("Energy",      "kWh", "Joules", *factor(3600000)),
+    ("Power",       "Watts", "Kilowatts", *factor(1e-3)),
+    ("Power",       "Watts", "Horsepower", *factor(1 / 745.7)),
+    ("Data",        "Bytes", "KB", *factor(1 / 1024)),
+    ("Data",        "MB", "GB", *factor(1 / 1024)),
+    ("Data",        "GB", "TB", *factor(1 / 1024)),
+    ("Angle",       "Degrees", "Radians", *factor(math.pi / 180)),
+    ("Frequency",   "Hz", "kHz", *factor(1e-3)),
+    ("Frequency",   "MHz", "GHz", *factor(1e-3)),
+    ("Force",       "Newton", "Kilonewton", *factor(1e-3)),
+    ("Force",       "Newton", "Pound-force", *factor(0.224809)),
+    ("Torque",      "N·m", "lb·ft", *factor(0.737562)),
+    ("Resistance",  "Ω", "kΩ", *factor(1e-3)),
+    ("Voltage",     "V", "mV", *factor(1000)),
+    ("Current",     "A", "mA", *factor(1000)),
+]
 
 
+def unit_converter():
+    print()
+    for number, (category, a, b, _, _) in enumerate(CONVERSIONS, 1):
+        print(f"{number:>2}. {category} ({a} ↔ {b})")
+
+    choice = ask_int(f"Enter your choice (1-{len(CONVERSIONS)}): ", minimum=1)
+    if choice > len(CONVERSIONS):
+        print(f"Invalid choice! Please enter a number from 1 to {len(CONVERSIONS)}.")
+        return
+
+    category, a, b, a_to_b, b_to_a = CONVERSIONS[choice - 1]
+    print(f"1. {a} → {b}")
+    print(f"2. {b} → {a}")
+    direction = input("Direction (1 or 2): ").strip()
+
+    if direction == "1":
+        value = ask_float(f"Enter value in {a}: ")
+        print(f"{format_number(value)} {a} = {format_number(a_to_b(value))} {b}")
+    elif direction == "2":
+        value = ask_float(f"Enter value in {b}: ")
+        print(f"{format_number(value)} {b} = {format_number(b_to_a(value))} {a}")
+    else:
+        print("Invalid direction.")
+
+
+#----------------------------NUMBER BASE CONVERTER----------------------------
