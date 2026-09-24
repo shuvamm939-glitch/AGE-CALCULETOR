@@ -357,3 +357,26 @@ def unit_converter():
 
 
 #----------------------------NUMBER BASE CONVERTER----------------------------
+
+def base_menu():
+    print("\n1. Decimal → Binary / Octal / Hex")
+    print("2. Binary  → Decimal")
+    print("3. Octal   → Decimal")
+    print("4. Hex     → Decimal")
+    choice = input("Enter your choice (1-4): ").strip()
+
+    try:
+        if choice == "1":
+            n = ask_int("Enter a whole number: ")
+            print(f"Binary = {bin(n)[2:] if n >= 0 else '-' + bin(n)[3:]}")
+            print(f"Octal  = {oct(n)[2:] if n >= 0 else '-' + oct(n)[3:]}")
+            print(f"Hex    = {hex(n)[2:].upper() if n >= 0 else '-' + hex(n)[3:].upper()}")
+        elif choice in ("2", "3", "4"):
+            base = {"2": 2, "3": 8, "4": 16}[choice]
+            text = input("Enter the number: ").strip()
+            print(f"Decimal = {int(text, base)}")
+        else:
+            print("Invalid choice")
+    except ValueError:
+        print("That is not a valid number for this base.")
+
