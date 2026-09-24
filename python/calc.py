@@ -445,4 +445,92 @@ def clear_history():
     history = []
     print("History cleared (not yet saved to file).")
 
+#---------------------MAIN MENU----------------------------
 
+def print_menu():
+    print("\n============XD CALCULATOR============")
+    print(" Type any expression, e.g.  5+3*2 - sqrt(16)   2pi   sin(30)")
+    print(" Operators : + - * / ^ (power)  % (remainder)  // (whole division)")
+    print(" Functions : sqrt cbrt sin cos tan asin acos atan sinh cosh tanh")
+    print("             log ln log2 exp abs round floor ceil fact ncr npr gcd lcm")
+    print(" Constants : pi e   ans (last answer)   m (memory)")
+    print(f" Angle mode: {angle_mode}   (type 'mode' to change)")
+    print(" Commands  :")
+    print("   percent  -> percentage calculations")
+    print("   stats    -> sum / average / median / std dev of many numbers")
+    print("   convert  -> unit conversions (37 types)")
+    print("   base     -> binary / octal / hex converter")
+    print("   memory   -> memory menu      m+ m- mc mr -> quick memory keys")
+    print("   history  -> show history     save / load / clear")
+    print("   help     -> show this menu   exit -> quit")
+    print("=====================================")
+
+
+def toggle_angle_mode():
+    global angle_mode
+    angle_mode = "RAD" if angle_mode == "DEG" else "DEG"
+    print(f"Angle mode is now {angle_mode}.")
+
+
+def calculator():
+    global memory
+    load_history()
+    print_menu()
+
+    while True:
+        try:
+            user_input = input("\nEnter expression or command: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("\nExiting calculator. Goodbye!")
+            break
+
+        if not user_input:
+            continue
+
+        if user_input == "exit":
+            print("Exiting calculator. Goodbye!")
+            break
+        elif user_input == "help":
+            print_menu()
+        elif user_input == "percent":
+            percentage_menu()
+        elif user_input == "stats":
+            stats_menu()
+        elif user_input == "convert":
+            unit_converter()
+        elif user_input == "base":
+            base_menu()
+        elif user_input == "mode":
+            toggle_angle_mode()
+        elif user_input == "memory":
+            memory_menu()
+        elif user_input == "m+":
+            memory_add(last_answer)
+        elif user_input == "m-":
+            memory_add(-last_answer)
+        elif user_input == "mc":
+            memory = 0
+            print("Memory cleared.")
+        elif user_input == "mr":
+            print(f"Memory value: {format_number(memory)}")
+        elif user_input == "history":
+            show_history()
+        elif user_input == "save":
+            save_history()
+        elif user_input == "load":
+            load_history()
+        elif user_input == "clear":
+            clear_history()
+        else:
+            try:
+                result = format_number(calculate(user_input))
+            except CalcError as error:
+                print(f"Error: {error}")
+            else:
+                print(f"Result: {result}")
+                history.append(f"{user_input} = {result}")
+
+
+if __name__ == "__main__":
+    calculator()
+    
