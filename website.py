@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask, render_template, request  # type: ignore
 from python.newage import calculate_age
 
@@ -8,7 +6,6 @@ app = Flask(
     template_folder="website/templates",
     static_folder="website/static",
 )
-
 
 
 @app.route("/", methods=["GET", "POST"])
