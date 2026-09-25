@@ -5,9 +5,10 @@ from python.newage import calculate_age
 
 app = Flask(
     __name__,
-    template_folder=os.path.join(os.path.dirname(__file__), "website", "templates"),
-    static_folder=os.path.join(os.path.dirname(__file__), "website", "static"),
+    template_folder="website/templates",
+    static_folder="website/static",
 )
+
 
 
 @app.route("/", methods=["GET", "POST"])
