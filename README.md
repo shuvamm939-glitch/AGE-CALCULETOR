@@ -12,7 +12,7 @@ A collaborative project featuring a collection of Python-powered calculation too
 
 ### Phase 1: Age calculator (v1.0.0)
 - [x] build age calc py script - [@Eren](https://github.com/shuvamm939-glitch)
-- [x] design html/css ui for age calc and connect to flask website - [@thunderzz](https://github.com/thunderzz12)
+- [x] design html/css ui for age calc and connect to flask website - [@anuj](https://github.com/anujzz12)
 
 ![alt text](ss/image-1.png)
 
@@ -20,8 +20,8 @@ A collaborative project featuring a collection of Python-powered calculation too
 
 ### Phase 2: Standard Calculator (v2.0.0)
 - [x] create python script for standard calc - [@Eren](https://github.com/shuvamm939-glitch)
-- [x] created 3 page routes for home, calc, age calc - [@thunderzz](https://github.com/thunderzz12)
-- [x] design calc ui and integrate to existing flask web. also better age-calc ui - [@thunderzz](https://github.com/thunderzz12)
+- [x] created 3 page routes for home, calc, age calc - [@anuj](https://github.com/anujzz12)
+- [x] design calc ui and integrate to existing flask web. also better age-calc ui - [@anuj](https://github.com/anujzz12)
 
 ![alt text](ss/image-5.png)
 ![alt text](ss/image-4.png)
@@ -33,12 +33,12 @@ A collaborative project featuring a collection of Python-powered calculation too
 - [ ] add project repo link on home page
 - [ ] add github links of both collaborators in home page
 
-**Changelog page**
+**[Changelog page](https://pycalculator.vercel.app/changelog)**
 - [x] create /changelog route in flask
 - [x] design changelog page ui
 - [x] add changelog link in navbar
 
-*done in v2.3.0 by [@anuj](https://github.com/thunderzz12)* -
+*done in v2.3.0 by [@anuj](https://github.com/anujzz12)* -
 *idea for ui inspired by [this](https://learnspace-app.vercel.app/changelog)*
 
 ![alt text](ss/image-6.png)
@@ -65,4 +65,4 @@ A collaborative project featuring a collection of Python-powered calculation too
 
 ## Collaborators
 - [@Eren](https://github.com/shuvamm939-glitch)
-- [@thunderzz](https://github.com/thunderzz12)
+- [@anuj](https://github.com/anujzz12)
